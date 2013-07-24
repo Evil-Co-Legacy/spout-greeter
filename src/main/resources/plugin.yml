@@ -1,0 +1,5 @@
+name: SpoutGreeter
+description: Greets players ...
+main: com.evilco.spout.greeter.GreeterPlugin
+version: "${project.version}"
+depend: [Spout]
