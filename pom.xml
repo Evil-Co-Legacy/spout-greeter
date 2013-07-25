@@ -46,6 +46,9 @@
   
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<signerKeyStore>${basedir}/../evilco-keystore</signerKeyStore>
+		<signerPassword>changeit</signerPassword>
+		<signerAlias>evilco-commercial</signerAlias>
 	</properties>
   
 	<repositories>
@@ -83,11 +86,11 @@
 			<version>dev-SNAPSHOT</version>
 		</dependency>
 		
-		<!-- IO Utils -->
+		<!-- Plugin Utilities -->
 		<dependency>
-			<groupId>commons-io</groupId>
-			<artifactId>commons-io</artifactId>
-			<version>1.3.2</version>
+			<groupId>com.evilco.bukkit.util</groupId>
+			<artifactId>plugin</artifactId>
+			<version>1.0.0</version>
 		</dependency>
 	</dependencies>
   
@@ -187,6 +190,12 @@
 				
 				<configuration>
 					<minimizeJar>true</minimizeJar>
+					
+					<artifactSet>
+						<includes>
+							<include>com.evilco.*:*</include>
+						</includes>
+					</artifactSet>
 				</configuration>
 			</plugin>
 			
@@ -196,9 +205,32 @@
 				<version>2.3.2</version>
 				
 				<configuration>
+					<arguments>-DsignerKeyStore=${signerKeyStore} -DsignerAlias=${signerAlias} -DsignerPassword=${signerPassword}</arguments>
 					<preparationGoals>assembly:assembly</preparationGoals>
 					<goals>assembly:assembly</goals>
-					<tagNameFormat>@{project.version}</tagNameFormat>
+					<tagNameFormat>release-@{project.version}</tagNameFormat>
+				</configuration>
+			</plugin>
+			
+			<!-- JAR signing -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jarsigner-plugin</artifactId>
+				<version>1.2</version>
+
+				<executions>
+					<execution>
+						<id>sign</id>
+						<goals>
+							<goal>sign</goal>
+						</goals>
+					</execution>
+				</executions>
+
+				<configuration>
+					<keystore>${signerKeyStore}</keystore>
+					<alias>${signerAlias}</alias>
+					<storepass>${signerPassword}</storepass>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -208,76 +240,24 @@
 		<!-- Attach javadocs and source .jars -->
 		<profile>
 			<id>attach-docs</id>
-      
-		<build>
-			<plugins>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-source-plugin</artifactId>
-					<version>2.2.1</version>
-
-					<executions>
-						<execution>
-							<id>attach-sources</id>
-							<goals>
-								<goal>jar</goal>
-							</goals>
-						</execution>
-					</executions>
-				</plugin>
-			</plugins>
-		</build>
-    </profile>
-    
-    <!-- Build Spout, disabled by default because it always breaks -->
-    <profile>
-      <id>spout</id>
-      
-      <repositories>
-        <repository> <!-- WARNING: This breaks all the time -->
-          <id>spout-repo</id>
-          <url>http://nexus.spout.org/content/groups/public/</url>
-        </repository>
-      </repositories>
-      
-      <dependencies>
-        <dependency>
-          <groupId>org.spout</groupId>
-          <artifactId>spoutapi</artifactId>
-          <version>dev-SNAPSHOT</version> <!-- WARNING: This breaks all the time -->
-          <optional>true</optional>
-        </dependency>
-        <dependency>
-          <groupId>org.spout</groupId>
-          <artifactId>vanilla</artifactId>
-          <version>1.4.7-SNAPSHOT</version> <!-- WARNING: This breaks all the time -->
-          <optional>true</optional>
-        </dependency>
-      </dependencies>
-      
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>build-helper-maven-plugin</artifactId>
-            <version>1.5</version>
-            <executions>
-              <execution>
-                <id>add-sources</id>
-                <phase>generate-sources</phase>
-                <goals>
-                  <goal>add-source</goal>
-                </goals>
-                <configuration>
-                  <sources>
-                    <source>${basedir}/src/spout/java</source>
-                  </sources>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-source-plugin</artifactId>
+						<version>2.2.1</version>
+	
+						<executions>
+							<execution>
+								<id>attach-sources</id>
+								<goals>
+									<goal>jar</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>
