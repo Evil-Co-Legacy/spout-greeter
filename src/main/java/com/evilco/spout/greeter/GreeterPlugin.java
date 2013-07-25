@@ -1,22 +1,22 @@
-/*
-* This file is part of SpoutGreeter.
-*
-* Copyright (C) 2013 Evil-Co <http://www.evil-co.com>
-* SpoutGreeter is licensed under the GNU Lesser General Public License.
-*
-* SpoutGreeter is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Lesser General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* SpoutPlugin is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Lesser General Public License for more details.
-*
-* You should have received a copy of the GNU Lesser General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+/**
+ * This file is part of SpoutGreeter.
+ *
+ * Copyright (C) 2013 Evil-Co <http://www.evil-co.com>
+ * SpoutGreeter is licensed under the GNU Lesser General Public License.
+ *
+ * SpoutGreeter is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * SpoutPlugin is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.evilco.spout.greeter;
 
 import java.io.BufferedReader;
@@ -26,9 +26,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 import java.util.List;
@@ -36,13 +34,13 @@ import java.util.Scanner;
 import java.util.Vector;
 import java.util.logging.Level;
 
-import org.apache.commons.io.IOUtils;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.event.spout.SpoutCraftEnableEvent;
+
+import com.evilco.bukkit.util.plugin.SimpleJavaPlugin;
 
 /**
  * Basic Greeter Plugin
@@ -51,7 +49,7 @@ import org.getspout.spoutapi.event.spout.SpoutCraftEnableEvent;
  * @license			GNU Lesser General Public License <http://www.gnu.org/licenses/lgpl.txt>
  * @package			com.evilco.spout.greeter
  */
-public class GreeterPlugin extends JavaPlugin implements Listener {
+public class GreeterPlugin extends SimpleJavaPlugin implements Listener {
 
 	/**
 	 * Defines whether the plugin version has been extracted.
@@ -101,7 +99,7 @@ public class GreeterPlugin extends JavaPlugin implements Listener {
 		this.getDataFolder().mkdirs();
 		
 		// extract default greeting
-		if (!this.getGreetingFile().exists()) this.extractDefaultFile(this.getGreetingFile(), "/defaults/greeting.txt");
+		this.extractFile("defaults/greeting.txt", this.getGreetingFile());
 		
 		// read database
 		this.readDatabase();
@@ -131,43 +129,6 @@ public class GreeterPlugin extends JavaPlugin implements Listener {
 		
 		// store database
 		this.saveDatabase();
-	}
-	
-	/**
-	 * Extracts a default file.
-	 * @param target
-	 * @param input
-	 */
-	public void extractDefaultFile(File target, String input) {
-		this.getLogger().info("Extracting " + input + " from plugin container ...");
-		
-		// create streams
-		InputStream in = null;
-		OutputStream out = null;
-		
-		try {
-			// get stream
-			in = GreeterPlugin.class.getResourceAsStream(input);
-			
-			// create output file
-			target.createNewFile();
-			
-			// get output stream
-			out = new FileOutputStream(target);
-			
-			// copy
-			IOUtils.copy(in, out);
-		} catch (IOException ex) {
-			this.getLogger().log(Level.SEVERE, "Cannot extract default resource \"" + input + "\" from plugin jar!", ex);
-		} finally {
-			try {
-				in.close();
-			} catch (Exception ex) { } // ignore
-			
-			try {
-				out.close();
-			} catch (Exception ex) { } // ignore
-		}
 	}
 	
 	/**
